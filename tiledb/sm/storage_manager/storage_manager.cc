@@ -1476,21 +1476,26 @@ Status StorageManager::get_fragment_info(
   }
 
   // Get fragment non-empty domain
-  FragmentMetadata meta(
-      this, array.array_schema(), fragment_uri, timestamp_range, !sparse);
-  RETURN_NOT_OK(meta.load(*array.encryption_key(), nullptr, 0));
+  FragmentMetadata* meta = tdb_new(
+      FragmentMetadata,
+      this,
+      array.array_schema(),
+      fragment_uri,
+      timestamp_range,
+      !sparse);
+  RETURN_NOT_OK(meta->load(*array.encryption_key(), nullptr, 0));
 
   // This is important for format version > 2
-  sparse = !meta.dense();
+  sparse = !meta->dense();
 
   // Get fragment size
   uint64_t size;
-  RETURN_NOT_OK(meta.fragment_size(&size));
+  RETURN_NOT_OK(meta->fragment_size(&size));
 
   // Compute expanded non-empty domain only for dense fragments
   // Get non-empty domain, and compute expanded non-empty domain
   // (only for dense fragments)
-  const auto& non_empty_domain = meta.non_empty_domain();
+  const auto& non_empty_domain = meta->non_empty_domain();
   auto expanded_non_empty_domain = non_empty_domain;
   if (!sparse)
     array.array_schema()->domain()->expand_to_tiles(&expanded_non_empty_domain);
@@ -1498,14 +1503,16 @@ Status StorageManager::get_fragment_info(
   // Set fragment info
   *fragment_info = SingleFragmentInfo(
       fragment_uri,
-      meta.format_version(),
+      meta->format_version(),
       sparse,
       timestamp_range,
-      meta.cell_num(),
+      meta->cell_num(),
       size,
-      meta.has_consolidated_footer(),
+      meta->has_consolidated_footer(),
       non_empty_domain,
-      expanded_non_empty_domain);
+      expanded_non_empty_domain,
+      array.encryption_key(),
+      meta);
 
   return Status::Ok();
 }
