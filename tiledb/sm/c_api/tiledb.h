@@ -7118,7 +7118,8 @@ TILEDB_EXPORT int32_t tiledb_fragment_info_get_non_empty_domain_var_from_index(
     void* end);
 
 /**
- * Retrieves the non-empty domain from a fragment for a given dimension index.
+ * Retrieves the non-empty domain from a fragment for a given dimension name.
+ * Applicable to var-sized dimensions.
  *
  * **Example:**
  *
@@ -7157,7 +7158,7 @@ TILEDB_EXPORT int32_t tiledb_fragment_info_get_non_empty_domain_var_from_name(
  *
  * In the case of sparse fragments, this is the number of physical tiles.
  *
- * Dense fragments, do not contain MBRs.
+ * Dense fragments do not contain MBRs.
  *
  * **Example:**
  *
