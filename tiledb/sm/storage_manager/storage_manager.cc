@@ -1382,7 +1382,9 @@ Status StorageManager::get_fragment_info(
           sizes[i],
           meta->has_consolidated_footer(),
           non_empty_domain,
-          expanded_non_empty_domain));
+          expanded_non_empty_domain,
+          array.encryption_key(),
+          meta));
     }
   }
 
